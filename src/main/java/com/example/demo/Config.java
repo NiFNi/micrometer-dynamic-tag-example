@@ -8,10 +8,10 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.UUID;
+
 @Configuration
 public class Config {
-
-    private String next = "first";
 
     @Bean
     public CountedAspect countedAspect(MeterRegistry registry) {
@@ -23,18 +23,9 @@ public class Config {
         return new MeterFilter() {
             @Override
             public Meter.Id map(Meter.Id id) {
-                var tags = Tags.concat(id.getTagsAsIterable(), Tags.of("DYNAMIC_FILTER_TAG", next));
-                prepareNext();
+                var tags = Tags.concat(id.getTagsAsIterable(), Tags.of("DYNAMIC_FILTER_TAG", UUID.randomUUID().toString()));
                 return id.withTags(tags);
             }
         };
-    }
-
-    private void prepareNext() {
-        if (next.equals("first")) {
-            next = "second";
-        } else {
-            next = "first";
-        }
     }
 }
